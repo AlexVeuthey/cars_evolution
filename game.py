@@ -19,7 +19,7 @@ road = Road(size, width=50)
 done = False
 clock = pygame.time.Clock()
 
-god.update(road)
+# god.update(road)
 
 while not done:
     clock.tick(10)
@@ -35,7 +35,7 @@ while not done:
     screen.fill((255, 255, 255))
 
     road.draw(screen)
-    # god.update(road)
+    god.update(road)
     god.draw(screen)
 
     # for loop on generations

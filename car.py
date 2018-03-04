@@ -22,9 +22,18 @@ class Car:
         self.inter_point_right = [0, 0]
         self.inter_point_front = [0, 0]
 
-        self.speed = 0.0
+        self.speed = 10.0
         self.acceleration = 0.0
-        self.steering = 0.0
+        self.steering = 5
+
+    def update(self):
+        self.speed = max(0, self.speed + self.acceleration - SPEED_DAMPING)
+        normalized_speed = self.speed / MAX_SPEED
+        self.direction += self.steering * normalized_speed
+        d = np.radians(self.direction)
+        vector = [cos(d), sin(d)]
+        vector = vector / np.linalg.norm(vector)
+        self.position += vector * self.speed
 
     def rotation_matrix(self):
         d = np.radians(self.direction)
@@ -83,7 +92,7 @@ class Car:
             x = wall_point[0]
             y = car_point[1]
         elif np.isclose(car_vector[0], 0) or np.isclose(wall_vector[0], 0):
-            y = ((car_vector[0] / car_vector[1]) * car_point[1] - (wall_vector[0] / wall_vector[1]) * wall_point[1] + wall_point[0] - p1[0]) / (
+            y = ((car_vector[0] / car_vector[1]) * car_point[1] - (wall_vector[0] / wall_vector[1]) * wall_point[1] + wall_point[0] - car_point[0]) / (
                     (car_vector[0] / car_vector[1]) - (wall_vector[0] / wall_vector[1]))
             x = (car_vector[0] / car_vector[1]) * (y - car_point[1]) + car_point[0]
         else:
@@ -121,7 +130,6 @@ class Car:
                 vector2 = np.array([p2[0] - p1[0], p2[1] - p1[1]])
                 vector2 = vector2 / np.linalg.norm(vector2)
                 d, inter_point = self.distance_to_line(point, vector, p1, vector2)
-                print(d, inter_point)
                 if d < smallest_distance:
                     smallest_distance = d
                     best_inter_point = inter_point
