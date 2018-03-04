@@ -13,3 +13,11 @@ class God:
         for i in range(self.population_size):
             model = Model.gen_random()
             self.drivers.append(Driver(model, Car(position, direction)))
+
+    def draw(self, surface):
+        for d in self.drivers:
+            d.car.draw(surface)
+
+    def update(self, road):
+        for d in self.drivers:
+            d.update(road)

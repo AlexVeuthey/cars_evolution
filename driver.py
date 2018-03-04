@@ -32,3 +32,11 @@ class Driver:
     def __init__(self, model, car):
         self.model = model
         self.car = car
+
+    def update(self, road):
+        left_wall = road.left_wall
+        right_wall = road.right_wall
+        d_left = self.car.compute_distance_left(left_wall)
+        d_right = self.car.compute_distance_right(right_wall)
+        d_front = self.car.compute_distance_front(left_wall, right_wall)
+
