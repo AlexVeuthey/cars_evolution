@@ -4,9 +4,10 @@ WIN_SIZE_Y = 600
 
 # moving the car
 MAX_STEERING = 5.0
-MAX_ACCELERATION = 10.0
-MAX_SPEED = 50.0
+MAX_ACCELERATION = 5.0
+MAX_SPEED = 10.0
 SPEED_DAMPING = 0.1
+TOLERANCE = 1.0
 
 # car basic attributes
 FOV = 40.0

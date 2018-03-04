@@ -9,7 +9,7 @@ class Car:
 
     def __init__(self, position, direction):
         # 2d vector (tuple)
-        self.position = position
+        self.position = np.copy(position)
         self.length = LENGTH
         self.width = WIDTH
         # angle in degrees, converted to radians, 0° = right, 90° = downwards because image...
@@ -22,18 +22,41 @@ class Car:
         self.inter_point_right = [0, 0]
         self.inter_point_front = [0, 0]
 
-        self.speed = 10.0
-        self.acceleration = 0.0
-        self.steering = 5
+        self.distance_left = 0.0
+        self.distance_right = 0.0
+        self.distance_front = 0.0
 
-    def update(self):
-        self.speed = max(0, self.speed + self.acceleration - SPEED_DAMPING)
-        normalized_speed = self.speed / MAX_SPEED
-        self.direction += self.steering * normalized_speed
-        d = np.radians(self.direction)
-        vector = [cos(d), sin(d)]
-        vector = vector / np.linalg.norm(vector)
-        self.position += vector * self.speed
+        self.speed = 0.0
+        self.acceleration = 0.0
+        self.steering = 0.0
+
+        self.distance_driven = 0.0
+        self.alive = True
+
+    def update(self, acceleration, steering):
+        if self.alive:
+            if np.isclose(self.distance_left, 0, atol=TOLERANCE) or \
+                    np.isclose(self.distance_right, 0, atol=TOLERANCE) or \
+                    np.isclose(self.distance_front, 0, atol=TOLERANCE):
+                self.alive = False
+                self.speed = 0.0
+            else:
+                self.acceleration = acceleration
+                self.steering = steering
+                self.speed = self.speed + self.acceleration
+                self.speed = self.speed * (1.0 - SPEED_DAMPING)
+                self.speed = min(self.speed, MAX_SPEED)
+                normalized_speed = abs(self.speed / MAX_SPEED)
+                self.direction += 10 * self.steering * normalized_speed
+                d = np.radians(self.direction)
+                vector = [cos(d), sin(d)]
+                vector = vector / np.linalg.norm(vector)
+                step = vector * self.speed
+                step_size = np.linalg.norm(step)
+                self.position += step
+                step_size = step_size if self.speed > 0 else -step_size
+                self.distance_driven += step_size
+                print(self.distance_driven)
 
     def rotation_matrix(self):
         d = np.radians(self.direction)
@@ -50,8 +73,10 @@ class Car:
             vec = np.asarray([-self.length / 2, -self.width / 2])
         elif position == 'BottomLeft':
             vec = np.asarray([-self.length / 2, self.width / 2])
-        elif position == 'Front' :
+        elif position == 'Front':
             vec = np.asarray([self.length / 2, 0])
+        else:
+            vec = np.asarray([0, 0])
         return self.position + self.mult(self.rotation_matrix(), vec)
 
     def draw(self, surface):
@@ -92,16 +117,18 @@ class Car:
             x = wall_point[0]
             y = car_point[1]
         elif np.isclose(car_vector[0], 0) or np.isclose(wall_vector[0], 0):
-            y = ((car_vector[0] / car_vector[1]) * car_point[1] - (wall_vector[0] / wall_vector[1]) * wall_point[1] + wall_point[0] - car_point[0]) / (
-                    (car_vector[0] / car_vector[1]) - (wall_vector[0] / wall_vector[1]))
+            y = ((car_vector[0] / car_vector[1]) * car_point[1] - (wall_vector[0] / wall_vector[1]) * wall_point[1] +
+                 wall_point[0] - car_point[0]) / (
+                        (car_vector[0] / car_vector[1]) - (wall_vector[0] / wall_vector[1]))
             x = (car_vector[0] / car_vector[1]) * (y - car_point[1]) + car_point[0]
         else:
             car_slope = car_vector[1] / car_vector[0]
             wall_slope = wall_vector[1] / wall_vector[0]
-            x = (wall_point[1] - car_point[1] + (car_slope * car_point[0]) - (wall_slope * wall_point[0])) / (car_slope - wall_slope)
+            x = (wall_point[1] - car_point[1] + (car_slope * car_point[0]) - (wall_slope * wall_point[0])) / (
+                    car_slope - wall_slope)
             y = car_point[1] + car_slope * (x - car_point[0])
         vector_points = np.array([x - car_point[0], y - car_point[1]])
-        return np.linalg.norm(vector_points), [x, y]
+        return np.linalg.norm(vector_points), [x, y], vector_points
 
     @staticmethod
     def to_left(pt, base_pt, vector):
@@ -122,15 +149,15 @@ class Car:
         view_angle = np.radians(view_angle)
         vector = [cos(view_angle), sin(view_angle)]
         vector = vector / np.linalg.norm(vector)
-        smallest_distance = 2 * self.max_distance
+        smallest_distance = self.max_distance
         best_inter_point = point + self.max_distance * vector
         for i in range(len(wall[:-1])):
-            p1, p2 = (wall[i], wall[i + 1]) if left else (wall[i+1], wall[i])
+            p1, p2 = (wall[i], wall[i + 1]) if left else (wall[i + 1], wall[i])
             if self.to_left(p1, point, vector) and self.to_right(p2, point, vector):
                 vector2 = np.array([p2[0] - p1[0], p2[1] - p1[1]])
                 vector2 = vector2 / np.linalg.norm(vector2)
-                d, inter_point = self.distance_to_line(point, vector, p1, vector2)
-                if d < smallest_distance:
+                d, inter_point, vector_points = self.distance_to_line(point, vector, p1, vector2)
+                if d < smallest_distance and np.dot(vector, vector_points) >= 0:
                     smallest_distance = d
                     best_inter_point = inter_point
         return min(smallest_distance, self.max_distance), best_inter_point
@@ -139,12 +166,14 @@ class Car:
         fl_point = self.position + self.mult(self.rotation_matrix(), np.array([self.length / 2, self.width / 2]))
         d, point = self.compute_distance(fl_point, left_wall, self.fov, True)
         self.inter_point_left = point
+        self.distance_left = d
         return d
 
     def compute_distance_right(self, right_wall):
         fr_point = self.position + self.mult(self.rotation_matrix(), np.array([self.length / 2, -self.width / 2]))
         d, point = self.compute_distance(fr_point, right_wall, self.fov, False)
         self.inter_point_right = point
+        self.distance_right = d
         return d
 
     def compute_distance_front(self, left_wall, right_wall):
@@ -153,10 +182,13 @@ class Car:
         d_right, best_point_right = self.compute_distance(f_point, right_wall, 0, False)
         if self.max_distance < d_left and self.max_distance < d_right:
             self.inter_point_front = best_point_left
+            self.distance_front = self.max_distance
             return self.max_distance
         elif d_left < d_right:
             self.inter_point_front = best_point_left
+            self.distance_front = d_left
             return d_left
         else:
             self.inter_point_front = best_point_right
+            self.distance_front = d_right
             return d_right

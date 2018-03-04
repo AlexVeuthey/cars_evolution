@@ -2,8 +2,8 @@ import numpy as np
 from god import God
 from road import Road
 import pygame
-from constants import *
 from utils import *
+from threading import Thread
 
 size = [WIN_SIZE_X, WIN_SIZE_Y]
 screen = pygame.display.set_mode(size)
@@ -11,15 +11,16 @@ screen = pygame.display.set_mode(size)
 start_pos = np.array([20, size[1] / 2])
 start_dir = 0.0
 
-god = God(1)
+god = God(10)
 god.initialize_population(start_pos, start_dir)
 
-road = Road(size, width=50)
+road = Road(size, width=40)
 
 done = False
 clock = pygame.time.Clock()
 
-# god.update(road)
+t = Thread(target=god.run, args=([road]))
+t.start()
 
 while not done:
     clock.tick(10)
@@ -35,12 +36,7 @@ while not done:
     screen.fill((255, 255, 255))
 
     road.draw(screen)
-    god.update(road)
     god.draw(screen)
-
-    # for loop on generations
-    # update god
-    # draw
 
     pygame.display.flip()
 

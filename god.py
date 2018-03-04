@@ -21,3 +21,7 @@ class God:
     def update(self, road):
         for d in self.drivers:
             d.update(road)
+
+    def run(self, road):
+        while 1:
+            self.update(road)

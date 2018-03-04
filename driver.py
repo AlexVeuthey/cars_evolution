@@ -2,8 +2,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from random import randint
 from constants import *
-import numpy as np
-# from torchvision.transforms import ToTensor
+import torch
 
 
 class Model(nn.Module):
@@ -31,14 +30,12 @@ class Driver:
         self.model = model
         self.car = car
 
-        # self.tTensor = ToTensor()
-
     def update(self, road):
         left_wall = road.left_wall
         right_wall = road.right_wall
         d_left = self.car.compute_distance_left(left_wall)
         d_right = self.car.compute_distance_right(right_wall)
         d_front = self.car.compute_distance_front(left_wall, right_wall)
-        inpt = np.asarray([d_left, d_right, d_front])/MAX_DISTANCE
-        # output = self.model.forward(inpt)
-        self.car.update()
+        inpt = torch.Tensor([d_left, d_right, d_front])/MAX_DISTANCE
+        output = self.model.forward(inpt)
+        self.car.update(output[0].data - 0.5, output[1].data - 0.5)
