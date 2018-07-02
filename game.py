@@ -11,8 +11,7 @@ screen = pygame.display.set_mode(size)
 start_pos = np.array([20, size[1] / 2])
 start_dir = 0.0
 
-god = God(10)
-god.initialize_population(start_pos, start_dir)
+god = God(10, 10, start_pos, start_dir)
 
 road = Road(size, width=40)
 
@@ -29,9 +28,9 @@ while not done:
         if event.type == pygame.QUIT:  # If user clicked close
             done = True  # Flag that we are done so we exit this loop
         # handle MOUSEBUTTONUP
-        if event.type == pygame.MOUSEBUTTONUP:
-            pos = pygame.mouse.get_pos()
-            print(flip_and_round(pos))
+        # if event.type == pygame.MOUSEBUTTONUP:
+        #     pos = pygame.mouse.get_pos()
+            # print(flip_and_round(pos))
 
     screen.fill((255, 255, 255))
 

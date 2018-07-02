@@ -37,7 +37,8 @@ class Car:
         if self.alive:
             if np.isclose(self.distance_left, 0, atol=TOLERANCE) or \
                     np.isclose(self.distance_right, 0, atol=TOLERANCE) or \
-                    np.isclose(self.distance_front, 0, atol=TOLERANCE):
+                    np.isclose(self.distance_front, 0, atol=TOLERANCE) or \
+                    self.speed < 0:
                 self.alive = False
                 self.speed = 0.0
             else:
@@ -56,7 +57,7 @@ class Car:
                 self.position += step
                 step_size = step_size if self.speed > 0 else -step_size
                 self.distance_driven += step_size
-                print(self.distance_driven)
+                # print(self.distance_driven)
 
     def rotation_matrix(self):
         d = np.radians(self.direction)
