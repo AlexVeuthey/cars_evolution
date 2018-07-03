@@ -1,8 +1,8 @@
 import torch.nn as nn
 import torch.nn.functional as F
-from random import randint
-from constants import *
 import torch
+from constants import *
+# from random import randint
 
 
 class Model(nn.Module):
@@ -20,7 +20,8 @@ class Model(nn.Module):
 
     @staticmethod
     def gen_random():
-        model = Model(randint(MIN_HIDDEN, MAX_HIDDEN))
+        # model = Model(randint(MIN_HIDDEN, MAX_HIDDEN))
+        model = Model(10)
         return model
 
 

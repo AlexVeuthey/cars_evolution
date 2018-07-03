@@ -9,7 +9,7 @@ class Road:
     def __init__(self, size, width):
         x = np.asarray(list(range(20, WIN_SIZE_X - 20, 30)))
         # x = np.array(range(int((size[0] - 40) / 50)))
-        y = 15 * np.cos(x)
+        y = 20 * np.cos(x)
         self.left_wall = list(zip(x, y + width / 2 + size[1] / 2))
         self.right_wall = list(zip(x, y - width / 2 + size[1] / 2))
 

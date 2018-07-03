@@ -5,38 +5,44 @@ import pygame
 from utils import *
 from threading import Thread
 
-size = [WIN_SIZE_X, WIN_SIZE_Y]
-screen = pygame.display.set_mode(size)
 
-start_pos = np.array([20, size[1] / 2])
-start_dir = 0.0
+def main():
+    size = [WIN_SIZE_X, WIN_SIZE_Y]
+    screen = pygame.display.set_mode(size)
 
-god = God(10, 10, start_pos, start_dir)
+    start_pos = np.array([20, size[1] / 2])
+    start_dir = 0.0
 
-road = Road(size, width=40)
+    god = God(10, start_pos, start_dir)
 
-done = False
-clock = pygame.time.Clock()
+    road = Road(size, width=60)
 
-t = Thread(target=god.run, args=([road]))
-t.start()
+    done = False
+    clock = pygame.time.Clock()
 
-while not done:
-    clock.tick(10)
+    t = Thread(target=god.run, args=([road]))
+    t.start()
 
-    for event in pygame.event.get():  # User did something
-        if event.type == pygame.QUIT:  # If user clicked close
-            done = True  # Flag that we are done so we exit this loop
-        # handle MOUSEBUTTONUP
-        # if event.type == pygame.MOUSEBUTTONUP:
-        #     pos = pygame.mouse.get_pos()
+    while not done:
+        clock.tick(10)
+
+        for event in pygame.event.get():  # User did something
+            if event.type == pygame.QUIT:  # If user clicked close
+                done = True  # Flag that we are done so we exit this loop
+            # handle MOUSEBUTTONUP
+            # if event.type == pygame.MOUSEBUTTONUP:
+            #     pos = pygame.mouse.get_pos()
             # print(flip_and_round(pos))
 
-    screen.fill((255, 255, 255))
+        screen.fill((255, 255, 255))
 
-    road.draw(screen)
-    god.draw(screen)
+        road.draw(screen)
+        god.draw(screen)
 
-    pygame.display.flip()
+        pygame.display.flip()
 
-pygame.quit()
+    pygame.quit()
+
+
+if __name__ == '__main__':
+    main()

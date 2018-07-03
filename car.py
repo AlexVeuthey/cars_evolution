@@ -94,11 +94,11 @@ class Car:
         pygame.draw.circle(surface, (255, 50, 0), br, 2)
         pygame.draw.circle(surface, (255, 50, 0), bl, 2)
         # distance lines
-        pygame.draw.line(surface, (200, 200, 200), fl,
+        pygame.draw.line(surface, (220, 220, 220), fl,
                          flip_and_round(self.inter_point_left), 1)
-        pygame.draw.line(surface, (200, 200, 200), fr,
+        pygame.draw.line(surface, (220, 220, 220), fr,
                          flip_and_round(self.inter_point_right), 1)
-        pygame.draw.line(surface, (200, 200, 200), front,
+        pygame.draw.line(surface, (220, 220, 220), front,
                          flip_and_round(self.inter_point_front), 1)
         # intersection points (debug)
         pygame.draw.circle(surface, (255, 0, 0), flip_and_round(self.inter_point_left), 2)
