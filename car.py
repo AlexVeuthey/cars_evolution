@@ -38,7 +38,8 @@ class Car:
             if np.isclose(self.distance_left, 0, atol=TOLERANCE) or \
                     np.isclose(self.distance_right, 0, atol=TOLERANCE) or \
                     np.isclose(self.distance_front, 0, atol=TOLERANCE) or \
-                    self.speed < 0:
+                    self.speed < 0 or \
+                    self.distance_driven > 0 and self.speed < 0.002:
                 self.alive = False
                 self.speed = 0.0
             else:
@@ -57,7 +58,6 @@ class Car:
                 self.position += step
                 step_size = step_size if self.speed > 0 else -step_size
                 self.distance_driven += step_size
-                # print(self.distance_driven)
 
     def rotation_matrix(self):
         d = np.radians(self.direction)
@@ -87,10 +87,10 @@ class Car:
         bl = flip_and_round(self.get_point_position('BottomLeft'))
         front = flip_and_round(self.get_point_position('Front'))
         # car main block
-        pygame.draw.polygon(surface, (255, 200, 0), [fl, fr, br, bl])
+        pygame.draw.polygon(surface, (200, 200, 200), [fl, fr, br, bl])
         # car lights for readability
-        pygame.draw.circle(surface, (0, 200, 255), fl, 2)
-        pygame.draw.circle(surface, (0, 200, 255), fr, 2)
+        pygame.draw.circle(surface, (200, 200, 0), fl, 2)
+        pygame.draw.circle(surface, (200, 200, 0), fr, 2)
         pygame.draw.circle(surface, (255, 50, 0), br, 2)
         pygame.draw.circle(surface, (255, 50, 0), bl, 2)
         # distance lines
@@ -101,9 +101,9 @@ class Car:
         pygame.draw.line(surface, (220, 220, 220), front,
                          flip_and_round(self.inter_point_front), 1)
         # intersection points (debug)
-        pygame.draw.circle(surface, (255, 0, 0), flip_and_round(self.inter_point_left), 2)
-        pygame.draw.circle(surface, (0, 255, 0), flip_and_round(self.inter_point_right), 2)
-        pygame.draw.circle(surface, (0, 0, 255), flip_and_round(self.inter_point_front), 2)
+        # pygame.draw.circle(surface, (255, 0, 255), flip_and_round(self.inter_point_left), 2)
+        # pygame.draw.circle(surface, (0, 230, 0), flip_and_round(self.inter_point_right), 2)
+        # pygame.draw.circle(surface, (0, 0, 0), flip_and_round(self.inter_point_front), 2)
 
     @staticmethod
     def mult(rot, v):

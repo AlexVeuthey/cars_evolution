@@ -11,11 +11,11 @@ def main():
     screen = pygame.display.set_mode(size)
 
     start_pos = np.array([20, size[1] / 2])
-    start_dir = 0.0
+    start_dir = 10.0
 
-    god = God(10, start_pos, start_dir)
+    god = God(50, start_pos, start_dir)
 
-    road = Road(size, width=60)
+    road = Road(size, width=63)
 
     done = False
     clock = pygame.time.Clock()

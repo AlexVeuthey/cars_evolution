@@ -1,7 +1,7 @@
 from driver import Driver, Model
 from car import Car
 from constants import *
-from random import shuffle
+from random import shuffle, randint
 
 
 class God:
@@ -46,16 +46,27 @@ class God:
         new_drivers = []
 
         # keep top drivers for next generation
-        new_drivers.extend(self.drivers[:N_BEST_TO_KEEP])
-
-        # generate new children from parents
-        for i in range(N_COMBINED):
-            new_drivers.append(self.drivers[i])
-
-        # generate new random drivers
-        for i in range(N_RANDOM):
-            driver = Driver(Model.gen_random(), Car(self.start_pos, self.start_dir))
+        for i in range(N_BEST_TO_KEEP):
+            driver = Driver(self.drivers[i].model, Car(self.start_pos, self.start_dir))
             new_drivers.append(driver)
+
+        # generate new children from parent
+        parents = self.drivers[:N_COMBINED]
+        shuffle(parents)
+        pairs = []
+        for i, p1 in enumerate(parents):
+            if i % 2 == 0:
+                pairs.append([p1, parents[i + 1]])
+        for p in pairs:
+            children = Model.combine(p[0], p[1])
+            child1 = Driver(children[0], Car(self.start_pos, self.start_dir))
+            child2 = Driver(children[1], Car(self.start_pos, self.start_dir))
+            if randint(0, 1):
+                child1.model.mutate()
+            if randint(0, 1):
+                child2.model.mutate()
+            new_drivers.extend([child1, child2])
+
         shuffle(new_drivers)
         self.drivers = new_drivers
 
