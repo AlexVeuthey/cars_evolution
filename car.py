@@ -32,8 +32,12 @@ class Car:
 
         self.distance_driven = 0.0
         self.alive = True
+        self.started = False
+        self.iterations = 0
 
     def update(self, acceleration, steering):
+        if not self.started:
+            self.started = True
         if self.alive:
             if np.isclose(self.distance_left, 0, atol=TOLERANCE) or \
                     np.isclose(self.distance_right, 0, atol=TOLERANCE) or \
@@ -43,6 +47,7 @@ class Car:
                 self.alive = False
                 self.speed = 0.0
             else:
+                self.iterations += 1
                 self.acceleration = acceleration
                 self.steering = steering
                 self.speed = self.speed + self.acceleration
@@ -81,25 +86,29 @@ class Car:
         return self.position + self.mult(self.rotation_matrix(), vec)
 
     def draw(self, surface):
+        condition = self.alive and self.started
         fl = flip_and_round(self.get_point_position('TopLeft'))
         fr = flip_and_round(self.get_point_position('TopRight'))
         br = flip_and_round(self.get_point_position('BottomRight'))
         bl = flip_and_round(self.get_point_position('BottomLeft'))
-        front = flip_and_round(self.get_point_position('Front'))
+        # front = flip_and_round(self.get_point_position('Front'))
         # car main block
-        pygame.draw.polygon(surface, (200, 200, 200), [fl, fr, br, bl])
+        color = C_ACTIVE_BODY if condition else C_DEAD_BODY
+        pygame.draw.polygon(surface, color, [fl, fr, br, bl])
         # car lights for readability
-        pygame.draw.circle(surface, (200, 200, 0), fl, 2)
-        pygame.draw.circle(surface, (200, 200, 0), fr, 2)
-        pygame.draw.circle(surface, (255, 50, 0), br, 2)
-        pygame.draw.circle(surface, (255, 50, 0), bl, 2)
-        # distance lines
-        pygame.draw.line(surface, (220, 220, 220), fl,
-                         flip_and_round(self.inter_point_left), 1)
-        pygame.draw.line(surface, (220, 220, 220), fr,
-                         flip_and_round(self.inter_point_right), 1)
-        pygame.draw.line(surface, (220, 220, 220), front,
-                         flip_and_round(self.inter_point_front), 1)
+        color = C_ACTIVE_LIGHTS_F if condition else C_DEAD_LIGHTS_F
+        pygame.draw.circle(surface, color, fl, 2)
+        pygame.draw.circle(surface, color, fr, 2)
+        color = C_ACTIVE_LIGHTS_R if condition else C_DEAD_LIGHTS_R
+        pygame.draw.circle(surface, color, br, 2)
+        pygame.draw.circle(surface, color, bl, 2)
+        # distance lines (debug)
+        # pygame.draw.line(surface, (220, 220, 220), fl,
+        #                  flip_and_round(self.inter_point_left), 1)
+        # pygame.draw.line(surface, (220, 220, 220), fr,
+        #                  flip_and_round(self.inter_point_right), 1)
+        # pygame.draw.line(surface, (220, 220, 220), front,
+        #                  flip_and_round(self.inter_point_front), 1)
         # intersection points (debug)
         # pygame.draw.circle(surface, (255, 0, 255), flip_and_round(self.inter_point_left), 2)
         # pygame.draw.circle(surface, (0, 230, 0), flip_and_round(self.inter_point_right), 2)

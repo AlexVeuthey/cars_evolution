@@ -14,31 +14,30 @@ class God:
         self.start_dir = start_dir
         self.drivers = []
 
-    def initialize_population(self, road):
+    def initialize_population(self):
         self.drivers = []
         for _ in range(self.population_size):
-            driver = Driver(Model.gen_random(), Car(self.start_pos, self.start_dir))
-            self.drivers.append(driver)
-        self.update(road)
+            d = Driver(Model.gen_random(), Car(self.start_pos, self.start_dir))
+            self.drivers.append(d)
+
+    def update_once(self, road):
+        for d in self.drivers:
+            d.update(road)
 
     def run(self, road):
-        self.initialize_population(road)
+        self.initialize_population()
         while self.current_gen < self.generations:
             print('Starting generation {0}'.format(self.current_gen + 1))
             for d in self.drivers:
-                while d.car.alive:
-                    self.update_driver(road, d)
+                while d.car.alive and not d.car.iterations > MAX_ITERATIONS:
+                    d.update(road)
+                d.car.alive = False
             self.generate_children()
-            self.update(road)
             self.current_gen += 1
 
     def draw(self, surface):
         for d in self.drivers:
             d.car.draw(surface)
-
-    def update(self, road):
-        for d in self.drivers:
-            d.update(road)
 
     def generate_children(self):
         self.drivers.sort(key=lambda x: x.car.distance_driven, reverse=True)
@@ -61,15 +60,11 @@ class God:
             children = Model.combine(p[0], p[1])
             child1 = Driver(children[0], Car(self.start_pos, self.start_dir))
             child2 = Driver(children[1], Car(self.start_pos, self.start_dir))
-            if randint(0, 1):
+            for _ in range(randint(0, 20)):
                 child1.model.mutate()
-            if randint(0, 1):
+            for _ in range(randint(0, 20)):
                 child2.model.mutate()
             new_drivers.extend([child1, child2])
 
         shuffle(new_drivers)
         self.drivers = new_drivers
-
-    @staticmethod
-    def update_driver(road, driver):
-        driver.update(road)

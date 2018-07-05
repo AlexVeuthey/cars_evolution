@@ -91,6 +91,6 @@ class Driver:
         d_left = self.car.compute_distance_left(left_wall)
         d_right = self.car.compute_distance_right(right_wall)
         d_front = self.car.compute_distance_front(left_wall, right_wall)
-        inpt = torch.Tensor([d_left, d_right, d_front])/MAX_DISTANCE
+        inpt = torch.Tensor([d_left, d_right, d_front])#/MAX_DISTANCE
         output = self.model.forward(inpt)
         self.car.update(output[0].data - 0.5, output[1].data - 0.5)

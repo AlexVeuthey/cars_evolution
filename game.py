@@ -15,7 +15,7 @@ def main():
 
     god = God(50, start_pos, start_dir)
 
-    road = Road(size, width=63)
+    road = Road(size, width=50)
 
     done = False
     clock = pygame.time.Clock()
