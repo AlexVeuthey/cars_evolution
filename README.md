@@ -43,4 +43,4 @@ To run a simulation, simple run `python game.py`.
 
 ## Inspiration
 
-[This video](https://www.youtube.com/watch?v=Aut32pR5PQA) was very inspirational for this project
+[This video](https://www.youtube.com/watch?v=Aut32pR5PQA) was very inspirational for this project.
