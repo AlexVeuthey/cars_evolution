@@ -4,7 +4,7 @@
 
 ## Objectives
 
-The main objective of this project was to quickly produce viable models for self-driving cars, and also having fun by watching how simple mechanisms can evolve by mimicking evolution.
+The main objective of this project was to quickly produce viable models for self-driving cars, and also having fun by watching how simple mechanisms can evolve by mimicking nature.
 
 ## Building blocks
 
