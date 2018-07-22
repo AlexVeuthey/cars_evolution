@@ -10,18 +10,18 @@ C_DEAD_BODY = (235, 235, 235)
 C_DEAD_LIGHTS_R = (255, 230, 230)
 C_DEAD_LIGHTS_F = (230, 255, 230)
 
-# moving the car
+# physics
 MAX_STEERING = 40.0
 MAX_ACCELERATION = 1.0
 MAX_SPEED = 2.0
 SPEED_DAMPING = 0.1
 TOLERANCE = 2.0
 
-# car basic attributes
+# car attributes
 FOV = 40.0
 MAX_DISTANCE = 100.0
-LENGTH = 40.0
-WIDTH = 20.0
+CAR_LENGTH = 40.0
+CAR_WIDTH = 20.0
 
 # neural network
 N_INPUT = 3
